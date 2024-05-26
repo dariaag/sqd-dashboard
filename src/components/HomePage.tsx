@@ -76,7 +76,6 @@ const HomePage: React.FC = () => {
   return (
     <ApolloProvider>
       <div className="relative min-h-screen">
-        <Scene />
         <div className="absolute inset-0 z-0">
           <Scene />
         </div>
