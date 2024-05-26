@@ -209,7 +209,7 @@ const Sphere = ({
       <BallCollider args={[1]} />
       <primitive
         object={obj.scene.clone()}
-        scale={[0.5, 0.5, 0.5]}
+        scale={[0.6, 0.6, 0.6]}
         ref={ref}
         {...props}
       />
