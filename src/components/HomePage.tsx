@@ -79,9 +79,9 @@ const HomePage: React.FC = () => {
         <div className="absolute inset-0 z-0">
           <Scene />
         </div>
-        <div className="relative z-10 flex justify-center pointer-events-none items-center p-4 gap-4 bg-opacity-80 min-h-screen">
+        <div className="relative z-10 flex justify-center pointer-events-none  items-center p-4 gap-4 bg-opacity-80 min-h-screen">
           <div className="max-w-5xl w-full p-4 rounded-xl space-y-4 bg-white bg-opacity-0 ">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-pixeboy text-center text-black">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl z-[-10] font-pixeboy text-center text-black">
               SQD DASHBOARD
             </h1>
             {/* <p className="text-center text-gray-600">
