@@ -99,7 +99,7 @@ const HomePage: React.FC = () => {
               {/* 2x2 grid of InfoWidgets */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoWidget
-                  title="Daily"
+                  title="Daily Exchanged"
                   data={{
                     date: dailyExchangeIns.date,
                     in: dailyExchangeIns.totalAmount,
@@ -107,7 +107,7 @@ const HomePage: React.FC = () => {
                   }}
                 />
                 <InfoWidget
-                  title="Monthly"
+                  title="Monthly Exchanged"
                   data={{
                     date: monthlyExchangeIns.date,
                     in: monthlyExchangeIns.totalAmount,
@@ -116,7 +116,7 @@ const HomePage: React.FC = () => {
                 />
 
                 <InfoWidget
-                  title="Exchange"
+                  title="Total Exchanged"
                   data={{
                     date: dailyExchangeIns.date,
                     in: overviewData.totalExchangeAmountIn,
@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
                   }}
                 />
                 <InfoWidget
-                  title="Total"
+                  title="Total Transferred"
                   data={{
                     date: dailyExchangeIns.date,
                     amount: overviewData.totalTransfersAmount,
