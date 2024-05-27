@@ -144,7 +144,7 @@ const HomePage: React.FC = () => {
   return (
     <ApolloProvider>
       <div className="relative min-h-screen">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 ">
           <Scene />
         </div>
         <div className="relative z-10 flex justify-center pointer-events-none  items-center p-4 gap-4 bg-opacity-80 min-h-screen">
