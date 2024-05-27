@@ -160,7 +160,7 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col lg:flex-row justify-center gap-4">
               {/* Vertical stack of MiniWidgets */}
 
-              <div className="space-y-4">
+              <div className="grid lg:grid-cols-1 grid-cols-2 gap-4">
                 <MiniWidget
                   title="🦐"
                   data={[overviewData.shrimpCount, "<100SQD"]}
