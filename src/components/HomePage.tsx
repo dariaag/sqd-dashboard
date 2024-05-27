@@ -91,10 +91,22 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col lg:flex-row justify-center gap-4">
               {/* Vertical stack of MiniWidgets */}
               <div className="space-y-4">
-                <MiniWidget title="🦐" data={overviewData.shrimpCount} />
-                <MiniWidget title="🐠" data={overviewData.goldfishCount} />
-                <MiniWidget title="🐬" data={overviewData.dolphinCount} />
-                <MiniWidget title="🐳" data={overviewData.whaleCount} />
+                <MiniWidget
+                  title="🦐"
+                  data={[overviewData.shrimpCount, "<100SQD"]}
+                />
+                <MiniWidget
+                  title="🐠"
+                  data={[overviewData.goldfishCount, "<10000SQD"]}
+                />
+                <MiniWidget
+                  title="🐬"
+                  data={[overviewData.dolphinCount, "<500000SQD"]}
+                />
+                <MiniWidget
+                  title="🐳"
+                  data={[overviewData.whaleCount, ">500000SQD"]}
+                />
               </div>
               {/* 2x2 grid of InfoWidgets */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -124,10 +136,14 @@ const HomePage: React.FC = () => {
                   }}
                 />
                 <InfoWidget
-                  title="Total Transferred"
+                  title="Summary"
                   data={{
-                    date: dailyExchangeIns.date,
-                    amount: overviewData.totalTransfersAmount,
+                    holders:
+                      overviewData.shrimpCount +
+                      overviewData.goldfishCount +
+                      overviewData.dolphinCount +
+                      overviewData.whaleCount,
+                    transferred: overviewData.totalTransfersAmount,
                   }}
                 />
               </div>
