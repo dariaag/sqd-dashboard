@@ -19,8 +19,21 @@ function getMonth() {
   }
   return `${year}-${month}`;
 }
+function getYesterday() {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const month = yesterday.getMonth() + 1;
+  const year = yesterday.getFullYear();
+  const date = yesterday.getDate();
 
+  if (month < 10) {
+    return `${year}-0${month}-${date}`;
+  }
+  return `${year}-${month}-${date}`;
+}
 let date = getDate();
+let yesterday = getYesterday();
 let month = getMonth();
 export const CUMULATIVE = gql`
   subscription {
@@ -74,3 +87,19 @@ export const MONTHLY_EXCHANGE_OUTS = gql`
         }
     }
     `;
+
+export const YESTERDAY_EXCHANGE_DATA_OUT = gql`
+  query GetYesterdayDataOut {
+    dailyExchangeOuts(where: { date_eq: "2024-05-26" }) {
+      totalAmount
+    }
+  }
+`;
+
+export const YESTERDAY_EXCHANGE_DATA_IN = gql`
+  query GetYesterdayDataIn {
+    dailyExchangeIns(where: { date_eq: "2024-05-26" }) {
+      totalAmount
+    }
+  }
+`;

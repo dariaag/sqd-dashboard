@@ -5,7 +5,7 @@ import InfoWidget from "./InfoWidget";
 import MiniWidget from "./MiniWidget";
 import dynamic from "next/dynamic";
 import ApolloProvider from "@/components/ApolloProvider";
-import { gql, useMutation, useSubscription } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import { useState } from "react";
 import {
   DAILY_EXCHANGE_INS,
@@ -13,8 +13,63 @@ import {
   CUMULATIVE,
   MONTHLY_EXCHANGE_INS,
   MONTHLY_EXCHANGE_OUTS,
+  YESTERDAY_EXCHANGE_DATA_IN,
+  YESTERDAY_EXCHANGE_DATA_OUT,
 } from "@/app/lib/subs";
+import { get } from "http";
 const Scene = dynamic(() => import("@/components/Scene"), { ssr: false });
+const getYesterdayDate = () => {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return yesterday.toISOString().split("T")[0];
+};
+const calculatePercentChange = (current: number, previous: number) => {
+  if (previous === 0) return 0;
+  return ((current - previous) / previous) * 100;
+};
+
+const handleQueryResultIn = (loading, error, data, today) => {
+  if (error) {
+    return `ERROR: ${error.message}`;
+  }
+  if (loading) {
+    return "Loading...";
+  }
+  if (!data) {
+    return "Nothing to show...";
+  }
+  if (data) {
+    let p = calculatePercentChange(today, data.dailyExchangeIns[0].totalAmount);
+    let s = p.toFixed(2);
+    if (p < 0) {
+      return `${s}%🔴`;
+    }
+    return `${s}%🟢`;
+  }
+};
+
+const handleQueryResultOut = (loading, error, data, today) => {
+  if (error) {
+    return `ERROR: ${error.message}`;
+  }
+  if (loading) {
+    return "Loading...";
+  }
+  if (!data) {
+    return "Nothing to show...";
+  }
+  if (data) {
+    let p = calculatePercentChange(
+      today,
+      data.dailyExchangeOuts[0].totalAmount
+    );
+    let s = p.toFixed(2);
+    if (p < 0) {
+      return `${s}%🔴`;
+    }
+    return `${s}%🟢`;
+  }
+};
 
 const HomePage: React.FC = () => {
   const { data: cumulativeData, loading: cumulativeLoading } =
@@ -28,8 +83,20 @@ const HomePage: React.FC = () => {
   const { data: monthlyExchangeOutsData, loading: monthlyExchangeOutsLoading } =
     useSubscription(MONTHLY_EXCHANGE_OUTS);
 
+  console.log(getYesterdayDate());
+  const {
+    loading: inLoading,
+    error: inError,
+    data: yesterdayDataIn,
+  } = useQuery(YESTERDAY_EXCHANGE_DATA_IN);
+  const {
+    loading: outLoading,
+    error: outError,
+    data: yesterdayDataOut,
+  } = useQuery(YESTERDAY_EXCHANGE_DATA_OUT);
+
   // Mock data in case the subscription has not loaded yet
-  console.log(monthlyExchangeInsData);
+  console.log(yesterdayDataIn, yesterdayDataOut);
   const overviewData = cumulativeData
     ? cumulativeData.cumulativeStats[0]
     : {
@@ -73,6 +140,7 @@ const HomePage: React.FC = () => {
           totalAmount: 1,
           date: "2021-10",
         };
+
   return (
     <ApolloProvider>
       <div className="relative min-h-screen">
@@ -84,17 +152,19 @@ const HomePage: React.FC = () => {
             <h1 className="text-4xl sm:text-6xl md:text-8xl z-[-10] font-pixeboy text-center text-black">
               SQD DASHBOARD
             </h1>
+
             {/* <p className="text-center text-gray-600">
             This dashboard provides an overview of exchange activities,
             transfers, and holder details.
           </p> */}
             <div className="flex flex-col lg:flex-row justify-center gap-4">
               {/* Vertical stack of MiniWidgets */}
+
               <div className="space-y-4">
                 <MiniWidget
                   title="🦐"
                   data={[overviewData.shrimpCount, "<100SQD"]}
-                />
+                ></MiniWidget>
                 <MiniWidget
                   title="🐠"
                   data={[overviewData.goldfishCount, "<10000SQD"]}
@@ -114,8 +184,26 @@ const HomePage: React.FC = () => {
                   title="Daily Exchanged"
                   data={{
                     date: dailyExchangeIns.date,
-                    in: dailyExchangeIns.totalAmount,
-                    out: dailyExchangeOuts.totalAmount,
+                    in:
+                      dailyExchangeIns.totalAmount.toString() +
+                      "(" +
+                      handleQueryResultIn(
+                        inLoading,
+                        inError,
+                        yesterdayDataIn,
+                        dailyExchangeIns.totalAmount
+                      ) +
+                      ")",
+                    out:
+                      dailyExchangeOuts.totalAmount.toString() +
+                      "(" +
+                      handleQueryResultOut(
+                        outLoading,
+                        outError,
+                        yesterdayDataOut,
+                        dailyExchangeOuts.totalAmount
+                      ) +
+                      ")",
                   }}
                 />
                 <InfoWidget
@@ -143,6 +231,7 @@ const HomePage: React.FC = () => {
                       overviewData.goldfishCount +
                       overviewData.dolphinCount +
                       overviewData.whaleCount,
+
                     transferred: overviewData.totalTransfersAmount,
                   }}
                 />
