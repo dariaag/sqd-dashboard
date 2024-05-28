@@ -17,6 +17,7 @@ import {
   YESTERDAY_EXCHANGE_DATA_OUT,
 } from "@/app/lib/subs";
 import { get } from "http";
+import Header from "./Header";
 const Scene = dynamic(() => import("@/components/Scene"), { ssr: false });
 const getYesterdayDate = () => {
   const yesterday = new Date();
@@ -72,6 +73,7 @@ const handleQueryResultOut = (loading, error, data, today) => {
 };
 
 const HomePage: React.FC = () => {
+  const [sceneVisible, setSceneVisible] = useState(false);
   const { data: cumulativeData, loading: cumulativeLoading } =
     useSubscription(CUMULATIVE);
   const { data: dailyExchangeInsData, loading: dailyExchangeInsLoading } =
@@ -140,101 +142,111 @@ const HomePage: React.FC = () => {
           totalAmount: 1,
           date: "2021-10",
         };
-
+  const handleToggleScene = (visible: boolean) => {
+    setSceneVisible(visible);
+  };
   return (
     <ApolloProvider>
-      <div className="relative min-h-screen">
-        <div className="absolute inset-0 z-0 ">
-          <Scene />
-        </div>
-        <div className="relative z-10 flex justify-center pointer-events-none  items-center p-4 gap-4 bg-opacity-80 min-h-screen">
-          <div className="max-w-5xl w-full p-4 rounded-xl space-y-4 bg-white bg-opacity-0 ">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl z-[-10] font-pixeboy text-center text-black">
-              SQD DASHBOARD
-            </h1>
+      <div className="bg-white">
+        <div className="relative min-h-screen">
+          <div className="absolute inset-0 z-10 h-10">
+            <Header onToggleScene={handleToggleScene} />
+          </div>
+          {sceneVisible && (
+            <div className="absolute inset-0 z-0">
+              <Scene />
+            </div>
+          )}
 
-            {/* <p className="text-center text-gray-600">
+          <div className="relative z-10 flex justify-center pointer-events-none  items-center p-4 gap-4 bg-opacity-80 min-h-screen">
+            <div className="max-w-5xl w-full p-4 rounded-xl space-y-4 bg-white bg-opacity-0 ">
+              <h1 className="text-4xl sm:text-6xl md:text-8xl z-[-10] font-pixeboy text-center text-black">
+                SQD DASHBOARD
+              </h1>
+
+              {/* <p className="text-center text-gray-600">
             This dashboard provides an overview of exchange activities,
             transfers, and holder details.
           </p> */}
-            <div className="flex flex-col lg:flex-row justify-center gap-4">
-              {/* Vertical stack of MiniWidgets */}
+              <div className="flex flex-col lg:flex-row justify-center gap-4">
+                {/* Vertical stack of MiniWidgets */}
 
-              <div className="grid lg:grid-cols-1 grid-cols-2 gap-4">
-                <MiniWidget
-                  title="🦐"
-                  data={[overviewData.shrimpCount, "<100SQD"]}
-                ></MiniWidget>
-                <MiniWidget
-                  title="🐠"
-                  data={[overviewData.goldfishCount, "<10000SQD"]}
-                />
-                <MiniWidget
-                  title="🐬"
-                  data={[overviewData.dolphinCount, "<500000SQD"]}
-                />
-                <MiniWidget
-                  title="🐳"
-                  data={[overviewData.whaleCount, ">500000SQD"]}
-                />
-              </div>
-              {/* 2x2 grid of InfoWidgets */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InfoWidget
-                  title="Daily Exchanged"
-                  data={{
-                    date: dailyExchangeIns.date,
-                    in:
-                      dailyExchangeIns.totalAmount.toString() +
-                      "(" +
-                      handleQueryResultIn(
-                        inLoading,
-                        inError,
-                        yesterdayDataIn,
-                        dailyExchangeIns.totalAmount
-                      ) +
-                      ")",
-                    out:
-                      dailyExchangeOuts.totalAmount.toString() +
-                      "(" +
-                      handleQueryResultOut(
-                        outLoading,
-                        outError,
-                        yesterdayDataOut,
-                        dailyExchangeOuts.totalAmount
-                      ) +
-                      ")",
-                  }}
-                />
-                <InfoWidget
-                  title="Monthly Exchanged"
-                  data={{
-                    date: monthlyExchangeIns.date,
-                    in: monthlyExchangeIns.totalAmount,
-                    out: monthlyExchangeOuts.totalAmount,
-                  }}
-                />
+                <div className="grid lg:grid-cols-1 grid-cols-2 gap-4">
+                  <MiniWidget
+                    title="🦐"
+                    data={[overviewData.shrimpCount, "<100SQD"]}
+                  ></MiniWidget>
+                  <MiniWidget
+                    title="🐠"
+                    data={[overviewData.goldfishCount, "<10000SQD"]}
+                  />
+                  <MiniWidget
+                    title="🐬"
+                    data={[overviewData.dolphinCount, "<500000SQD"]}
+                  />
+                  <MiniWidget
+                    title="🐳"
+                    data={[overviewData.whaleCount, ">500000SQD"]}
+                  />
+                </div>
+                {/* 2x2 grid of InfoWidgets */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <InfoWidget
+                    title="Daily Exchanged"
+                    data={{
+                      date: dailyExchangeIns.date,
+                      in:
+                        dailyExchangeIns.totalAmount.toString() +
+                        "(" +
+                        handleQueryResultIn(
+                          inLoading,
+                          inError,
+                          yesterdayDataIn,
+                          dailyExchangeIns.totalAmount
+                        ) +
+                        ")",
+                      out:
+                        dailyExchangeOuts.totalAmount.toString() +
+                        "(" +
+                        handleQueryResultOut(
+                          outLoading,
+                          outError,
+                          yesterdayDataOut,
+                          dailyExchangeOuts.totalAmount
+                        ) +
+                        ")",
+                    }}
+                  />
+                  <InfoWidget
+                    title="Monthly Exchanged"
+                    data={{
+                      date: monthlyExchangeIns.date,
+                      in: monthlyExchangeIns.totalAmount,
+                      out: monthlyExchangeOuts.totalAmount,
+                    }}
+                  />
 
-                <InfoWidget
-                  title="Total Exchanged"
-                  data={{
-                    date: dailyExchangeIns.date,
-                    in: overviewData.totalExchangeAmountIn,
-                    out: overviewData.totalExchangeAmountOut,
-                  }}
-                />
-                <InfoWidget
-                  title="Summary"
-                  data={{
-                    holders:
-                      overviewData.shrimpCount +
-                      overviewData.goldfishCount +
-                      overviewData.dolphinCount +
-                      overviewData.whaleCount,
+                  <InfoWidget
+                    title="Total Exchanged"
+                    data={{
+                      date: dailyExchangeIns.date,
+                      in: overviewData.totalExchangeAmountIn,
+                      out: overviewData.totalExchangeAmountOut,
+                    }}
+                  />
+                  <InfoWidget
+                    title="Summary"
+                    data={{
+                      holders:
+                        overviewData.shrimpCount +
+                        overviewData.goldfishCount +
+                        overviewData.dolphinCount +
+                        overviewData.whaleCount,
 
-                    transferred: overviewData.totalTransfersAmount,
-                  }}
-                />
+                      transferred: overviewData.totalTransfersAmount,
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
