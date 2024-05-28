@@ -18,6 +18,8 @@ import {
 } from "@/app/lib/subs";
 import { get } from "http";
 import Header from "./Header";
+import LiveChart from "./LiveChart";
+import LiveHoldersChart from "./LiveHoldersChart";
 const Scene = dynamic(() => import("@/components/Scene"), { ssr: false });
 const getYesterdayDate = () => {
   const yesterday = new Date();
@@ -43,9 +45,9 @@ const handleQueryResultIn = (loading, error, data, today) => {
     let p = calculatePercentChange(today, data.dailyExchangeIns[0].totalAmount);
     let s = p.toFixed(2);
     if (p < 0) {
-      return `${s}%🔴`;
+      return `${s}%`;
     }
-    return `${s}%🟢`;
+    return `${s}%`;
   }
 };
 
@@ -66,9 +68,9 @@ const handleQueryResultOut = (loading, error, data, today) => {
     );
     let s = p.toFixed(2);
     if (p < 0) {
-      return `${s}%🔴`;
+      return `${s}%`;
     }
-    return `${s}%🟢`;
+    return `${s}%`;
   }
 };
 
@@ -85,7 +87,6 @@ const HomePage: React.FC = () => {
   const { data: monthlyExchangeOutsData, loading: monthlyExchangeOutsLoading } =
     useSubscription(MONTHLY_EXCHANGE_OUTS);
 
-  console.log(getYesterdayDate());
   const {
     loading: inLoading,
     error: inError,
@@ -98,7 +99,7 @@ const HomePage: React.FC = () => {
   } = useQuery(YESTERDAY_EXCHANGE_DATA_OUT);
 
   // Mock data in case the subscription has not loaded yet
-  console.log(yesterdayDataIn, yesterdayDataOut);
+
   const overviewData = cumulativeData
     ? cumulativeData.cumulativeStats[0]
     : {
@@ -159,16 +160,12 @@ const HomePage: React.FC = () => {
           )}
 
           <div className="relative z-10 flex justify-center pointer-events-none  items-center p-4 gap-4 bg-opacity-80 min-h-screen">
-            <div className="max-w-5xl w-full p-4 rounded-xl space-y-4 bg-white bg-opacity-0 ">
+            <div className="max-w-4xl w-full p-1 rounded-xl space-y-4 bg-white bg-opacity-0 ">
               <h1 className="text-4xl sm:text-6xl md:text-8xl z-[-10] font-pixeboy text-center text-black">
                 SQD DASHBOARD
               </h1>
 
-              {/* <p className="text-center text-gray-600">
-            This dashboard provides an overview of exchange activities,
-            transfers, and holder details.
-          </p> */}
-              <div className="flex flex-col lg:flex-row justify-center gap-4">
+              <div className="flex justify-aroun flex-col lg:flex-row sm:justify-center gap-4">
                 {/* Vertical stack of MiniWidgets */}
 
                 <div className="grid lg:grid-cols-1 grid-cols-2 gap-4">
@@ -190,12 +187,12 @@ const HomePage: React.FC = () => {
                   />
                 </div>
                 {/* 2x2 grid of InfoWidgets */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grow sm:grid-cols-2 gap-4">
                   <InfoWidget
                     title="Daily Exchanged"
                     data={{
                       date: dailyExchangeIns.date,
-                      in:
+                      "to exchanges":
                         dailyExchangeIns.totalAmount.toString() +
                         "(" +
                         handleQueryResultIn(
@@ -205,7 +202,7 @@ const HomePage: React.FC = () => {
                           dailyExchangeIns.totalAmount
                         ) +
                         ")",
-                      out:
+                      "from exchanges":
                         dailyExchangeOuts.totalAmount.toString() +
                         "(" +
                         handleQueryResultOut(
@@ -221,8 +218,8 @@ const HomePage: React.FC = () => {
                     title="Monthly Exchanged"
                     data={{
                       date: monthlyExchangeIns.date,
-                      in: monthlyExchangeIns.totalAmount,
-                      out: monthlyExchangeOuts.totalAmount,
+                      "to exchanges": monthlyExchangeIns.totalAmount,
+                      "from exchanges": monthlyExchangeOuts.totalAmount,
                     }}
                   />
 
@@ -230,14 +227,14 @@ const HomePage: React.FC = () => {
                     title="Total Exchanged"
                     data={{
                       date: dailyExchangeIns.date,
-                      in: overviewData.totalExchangeAmountIn,
-                      out: overviewData.totalExchangeAmountOut,
+                      "to exchanges": overviewData.totalExchangeAmountIn,
+                      "from exchanges": overviewData.totalExchangeAmountOut,
                     }}
                   />
                   <InfoWidget
                     title="Summary"
                     data={{
-                      holders:
+                      "total holders":
                         overviewData.shrimpCount +
                         overviewData.goldfishCount +
                         overviewData.dolphinCount +
@@ -247,6 +244,10 @@ const HomePage: React.FC = () => {
                     }}
                   />
                 </div>
+              </div>
+              <div className="w-full mt-4 pointer-events-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <LiveChart />
+                <LiveHoldersChart />
               </div>
             </div>
           </div>

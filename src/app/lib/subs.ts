@@ -1,4 +1,5 @@
 import { gql, useMutation, useSubscription } from "@apollo/client";
+import exp from "constants";
 function getDate() {
   const today = new Date();
   const month = today.getMonth() + 1;
@@ -90,7 +91,7 @@ export const MONTHLY_EXCHANGE_OUTS = gql`
 
 export const YESTERDAY_EXCHANGE_DATA_OUT = gql`
   query GetYesterdayDataOut {
-    dailyExchangeOuts(where: { date_eq: "2024-05-26" }) {
+    dailyExchangeOuts(where: { date_eq: "${yesterday}" }) {
       totalAmount
     }
   }
@@ -98,8 +99,44 @@ export const YESTERDAY_EXCHANGE_DATA_OUT = gql`
 
 export const YESTERDAY_EXCHANGE_DATA_IN = gql`
   query GetYesterdayDataIn {
-    dailyExchangeIns(where: { date_eq: "2024-05-26" }) {
+    dailyExchangeIns(where: { date_eq: "${yesterday}" }) {
       totalAmount
+    }
+  }
+`;
+export const ALL_DAILY_EXCHANGE_INS = gql`
+  query GetAllDailyExchangeIns {
+    dailyExchangeIns {
+      date
+      totalAmount
+    }
+  }
+`;
+
+export const ALL_DAILY_EXCHANGE_OUTS = gql`
+  query GetAllDailyExchangeOuts {
+    dailyExchangeOuts {
+      date
+      totalAmount
+    }
+  }
+`;
+export const ALL_DAILY_HOLDER_COUNTS = gql`
+  query GetAllDailyHolderCounts {
+    dailyHolderCounts {
+      id
+      date
+      total
+    }
+  }
+`;
+
+export const DAILY_HOLDER_COUNT = gql`
+  subscription OnDailyHolderCount {
+    dailyHolderCounts {
+      id
+      date
+      total
     }
   }
 `;
